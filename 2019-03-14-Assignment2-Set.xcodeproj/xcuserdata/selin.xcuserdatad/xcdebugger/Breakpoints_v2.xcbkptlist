@@ -6,16 +6,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "2019-03-14-Assignment2-Set/SetGame.swift"
-            timestampString = "574971725.053021"
+            filePath = "2019-03-14-Assignment2-Set/ViewController.swift"
+            timestampString = "576395169.308017"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
-            landmarkName = "deal3Cards()"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "updateViewFromModel()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

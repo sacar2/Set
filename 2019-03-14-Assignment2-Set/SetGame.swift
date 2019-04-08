@@ -14,6 +14,7 @@ class SetGame{
     private(set) var cardsInDeck = [SetCard]()
     private(set) var cardsOnTable = [SetCard]()
     private(set) var matchedCards = [SetCard]()
+    private var setsOf3Cards = 0
     
     init(){
         createDeck()
@@ -40,6 +41,7 @@ class SetGame{
                     cardsOnTable.append(randomCard)
             }
         }
+        setsOf3Cards += 1
     }
     
     func selectCard(forIndex index: Int){
@@ -50,6 +52,7 @@ class SetGame{
         //if card is already an active card, unselect the card
         if card.isSelected == true {
             cardsOnTable[index].isSelected = false
+            reduceScoreDueToDeselection()
         }else{ //if the card is not already selected
             
             //check if there are already 3 cards selected
@@ -64,9 +67,9 @@ class SetGame{
             
             if (selectedCards.count == 2) {
                 //if there are now 3 selected cards, then check if they are a set
-                let newlySelectedCards = cardsOnTable.indices.filter{cardsOnTable[$0].isSelected}
-                if newlySelectedCards.count == 3{
-                    verifySet(forCardIndices: newlySelectedCards)
+                let newlySelectedCardIndices = cardsOnTable.indices.filter{cardsOnTable[$0].isSelected}
+                if newlySelectedCardIndices.count == 3{
+                    verifySet(forCardIndices: newlySelectedCardIndices)
                 }
             }
         }
@@ -93,11 +96,44 @@ class SetGame{
                     if checkIfAllEqualForValues([cardsOnTable[indices[0]].symbol, cardsOnTable[indices[1]].symbol, cardsOnTable[indices[2]].symbol]) || checkIfAllDifferentForValues([cardsOnTable[indices[0]].symbol, cardsOnTable[indices[1]].symbol, cardsOnTable[indices[2]].symbol]){
                         //TODO: if you make it here then yeah they're a set! wooooo.
                         //now add it to your matched cards (next time something is highlighted, check if it's matched, if it is then remove it from the cards on the table and replace these matched cards with 3 from the deck)
+                        for index in indices{
+                            matchedCards.append(cardsOnTable[index])
+                            if cardsInDeck.count > 0{
+                                cardsOnTable[index] = cardsInDeck.removeLast()
+                            }else{
+//                                cardsOnTable.removeAll(where: {cardsOnTable.indices.contains()})
+//                                cardsOnTable.remove(at: index)
+                                cardsOnTable[index].color = UIColor.clear
+                                cardsOnTable[index].isSelected = false
+                            }
+                        }
+                         increaseScoreDueToMatch()
+                    }else{
+                        reduceScoreDueToMismatch()
                     }
+                }else{
+                    reduceScoreDueToMismatch()
                 }
+            }else{
+                reduceScoreDueToMismatch()
             }
+        }else{
+            reduceScoreDueToMismatch()
         }
-        
+    }
+    
+    private func reduceScoreDueToDeselection(){
+        score -= 1
+    }
+    
+    private func reduceScoreDueToMismatch(){
+        score -= setsOf3Cards //if there are more cards on the table, reduce score more
+    }
+    
+    private func increaseScoreDueToMatch(){
+        score += (11 - setsOf3Cards) //if there are more cards on the table, reduce additional score. max sets is 8
     }
 }
+
+
 

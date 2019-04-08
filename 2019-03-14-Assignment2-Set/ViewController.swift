@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     @IBAction func newGame(_ sender: UIButton) {
         game = SetGame()
         for index in cardButtons.indices{
-            cardButtons[index].isHidden = true
+            restartButton(cardButtons[index])
         }
         updateViewFromModel()
     }
@@ -37,6 +37,9 @@ class ViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        for card in cardButtons{
+            card.layer.backgroundColor = UIColor.clear.cgColor
+        }
         updateViewFromModel()
     }
     
@@ -49,30 +52,36 @@ class ViewController: UIViewController {
                 cardString += card.symbol.rawValue
             }
             
-            var attributes: [NSAttributedString.Key: Any] = [:]
-            if card.shading == SetCard.Shading.open{
-                attributes = [
-                    NSAttributedString.Key.strokeWidth: 5,
-                    NSAttributedString.Key.strokeColor: card.color
-                ]
-            } else if card.shading == SetCard.Shading.solid{
-                attributes = [
-                    NSAttributedString.Key.strokeWidth: -1,
-                    NSAttributedString.Key.foregroundColor: card.color
-                ]
-            } else if card.shading == SetCard.Shading.striped{
-                attributes = [
-                    NSAttributedString.Key.strokeWidth: -1,
-                    NSAttributedString.Key.strokeColor: card.color,
-                    NSAttributedString.Key.foregroundColor: card.color.withAlphaComponent(0.15)
-                ]
-            }
             
-            let attributedCardString = NSAttributedString(string: cardString, attributes: attributes)
-            cardButton.isHidden = false
-            cardButton.setTitle(cardString, for: UIControl.State.normal)
-            cardButton.setAttributedTitle(attributedCardString, for: UIControl.State.normal)
-            cardButton.layer.cornerRadius = 8.0
+            if card.color == UIColor.clear{
+                restartButton(cardButton)
+            }else{
+                cardButton.layer.backgroundColor = UIColor.lightGray.cgColor
+                cardButton.isEnabled = true
+//                cardButton.isHidden = false
+                var attributes: [NSAttributedString.Key: Any] = [:]
+                if card.shading == SetCard.Shading.open{
+                    attributes = [
+                        NSAttributedString.Key.strokeWidth: 5,
+                        NSAttributedString.Key.strokeColor: card.color
+                    ]
+                } else if card.shading == SetCard.Shading.solid{
+                    attributes = [
+                        NSAttributedString.Key.strokeWidth: -1,
+                        NSAttributedString.Key.foregroundColor: card.color
+                    ]
+                } else if card.shading == SetCard.Shading.striped{
+                    attributes = [
+                        NSAttributedString.Key.strokeWidth: -1,
+                        NSAttributedString.Key.strokeColor: card.color,
+                        NSAttributedString.Key.foregroundColor: card.color.withAlphaComponent(0.15)
+                    ]
+                }
+                let attributedCardString = NSAttributedString(string: cardString, attributes: attributes)
+
+                cardButton.setTitle(cardString, for: UIControl.State.normal)
+                cardButton.setAttributedTitle(attributedCardString, for: UIControl.State.normal)
+            }
             
             if card.isSelected{
                 cardButton.layer.borderWidth = 3.0
@@ -84,8 +93,19 @@ class ViewController: UIViewController {
             //if there's no space on the table or no cards in the deck
             dealMoreCardsButton.isEnabled = game.cardsOnTable.count < 24 && game.cardsInDeck.count > 0
             
-            print("\(index) card symbol in data: \(card.symbol.rawValue)\nderived string that must have been set: \(cardString) card \ntitle of card button supposedly: \(String(describing: cardButton.titleLabel!.text))")
+            setScoreLabel(withScore: game.score)
         }
     }
-}
 
+    private func setScoreLabel(withScore score: Int){
+        scoreLabel.text = "Score: \(score)"
+    }
+    
+    private func restartButton(_ button: UIButton){
+        button.layer.backgroundColor = UIColor.clear.cgColor
+        button.isEnabled = false
+        button.setTitle("", for: UIControl.State.normal)
+        button.setAttributedTitle(NSAttributedString(), for: UIControl.State.normal)
+        button.layer.cornerRadius = 8.0
+    }
+}
