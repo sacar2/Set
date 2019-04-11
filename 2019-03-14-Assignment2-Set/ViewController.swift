@@ -97,10 +97,12 @@ class ViewController: UIViewController {
             dealMoreCardsButton.isEnabled = game.cardsOnTable.count < 24 && game.cardsInDeck.count > 0
             
             setScoreLabel(withScore: game.score)
-            if game.matchedCardIndices.isEmpty{
-                gameFeedbackLabel.text = ""
+            if !game.matchedCardIndices.isEmpty{
+                gameFeedbackLabel.text = "You found a set 😁"
+            }else if !game.mismatchedCardIndices.isEmpty{
+                gameFeedbackLabel.text = "This is not a matching set 😣"
             }else{
-                gameFeedbackLabel.text = "You found a set!"
+                gameFeedbackLabel.text = "Tap three cards to make a set!"
             }
         }
     }

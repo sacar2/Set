@@ -15,6 +15,7 @@ class SetGame{
     private(set) var cardsOnTable = [SetCard]()
     private(set) var matchedCards = [SetCard]()
     private(set) var matchedCardIndices = [Int]()
+    private(set) var mismatchedCardIndices = [Int]()
     private var setsOf3Cards = 0
     
     init(){
@@ -128,21 +129,26 @@ class SetGame{
                         matchedCardIndices = indices
                         increaseScoreDueToMatch()
                     }else{
-                        reduceScoreDueToMismatch()
+                        handleMismatch(forIndices: indices)
                     }
                 }else{
-                    reduceScoreDueToMismatch()
+                    handleMismatch(forIndices: indices)
                 }
             }else{
-                reduceScoreDueToMismatch()
+                handleMismatch(forIndices: indices)
             }
         }else{
-            reduceScoreDueToMismatch()
+            handleMismatch(forIndices: indices)
         }
     }
     
     private func reduceScoreDueToDeselection(){
         score -= 1
+    }
+    
+    private func handleMismatch(forIndices indices: [Int]){
+        mismatchedCardIndices = indices
+        reduceScoreDueToMismatch()
     }
     
     private func reduceScoreDueToMismatch(){
