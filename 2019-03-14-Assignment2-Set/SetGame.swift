@@ -14,6 +14,7 @@ class SetGame{
     private(set) var cardsInDeck = [SetCard]()
     private(set) var cardsOnTable = [SetCard]()
     private(set) var matchedCards = [SetCard]()
+    private(set) var matchedCardIndices = [Int]()
     private var setsOf3Cards = 0
     
     init(){
@@ -36,17 +37,23 @@ class SetGame{
     
     //only deal cards if there's space on the table
     func deal3Cards(){
-        for _ in 1...3{
-            if cardsOnTable.count < 24, let randomCard = cardsInDeck.popLast(){
+        if matchedCardIndices.isEmpty{
+            for _ in 1...3{
+                if cardsOnTable.count < 24, let randomCard = cardsInDeck.popLast(){
                     cardsOnTable.append(randomCard)
+                }
             }
+            setsOf3Cards += 1
+        }else{
+            removeMatchedCards()
         }
-        setsOf3Cards += 1
     }
     
     func selectCard(forIndex index: Int){
         //assert that the cards on the table contains that index (if it doesn't then something else is screwed up, so crash!
         assert (cardsOnTable.indices.contains(index), "card tapped is out of bounds of playable cards")
+        removeMatchedCards()
+        
         let card = cardsOnTable[index]
         
         //if card is already an active card, unselect the card
@@ -75,6 +82,21 @@ class SetGame{
         }
     }
     
+    func removeMatchedCards(){
+        //during the next selection or tap to the "add 3 more cards" button, manage the 3 matched cards , replace the cards with 3 from the deck
+        for matchIndex in matchedCardIndices{
+            if cardsInDeck.count > 0{
+                cardsOnTable[matchIndex] = cardsInDeck.removeLast()
+            }else{ //if there are no more items in the deck, make that card invisible
+                cardsOnTable[matchIndex].color = UIColor.clear
+                cardsOnTable[matchIndex].isSelected = false
+            }
+        }
+        
+        //reset the matched card indices to an empty array
+        matchedCardIndices.removeAll()
+    }
+    
     //check if they are all equal or all different for each property. as soon as one is false, return and do nothing
     func verifySet(forCardIndices indices: [Int]){
         //had to template the equatable type: call function with type T, where T is a template for all equatable types
@@ -86,6 +108,7 @@ class SetGame{
             return values[0] != values[1] && values[1] != values[2] && values[0] != values[2]
         }
         
+        //only doing multiple if statements instead of one large one because it's easier to read
         //cards must all be the same colour or all different colours
         if checkIfAllEqualForValues([cardsOnTable[indices[0]].color, cardsOnTable[indices[1]].color, cardsOnTable[indices[2]].color]) || checkIfAllDifferentForValues([cardsOnTable[indices[0]].color, cardsOnTable[indices[1]].color, cardsOnTable[indices[2]].color]){
             //cards must all be the same number or all different numbers
@@ -94,20 +117,16 @@ class SetGame{
                 if checkIfAllEqualForValues([cardsOnTable[indices[0]].shading, cardsOnTable[indices[1]].shading, cardsOnTable[indices[2]].shading]) || checkIfAllDifferentForValues([cardsOnTable[indices[0]].shading, cardsOnTable[indices[1]].shading, cardsOnTable[indices[2]].shading]){
                     //cards must all be the same symbol or all different symbols
                     if checkIfAllEqualForValues([cardsOnTable[indices[0]].symbol, cardsOnTable[indices[1]].symbol, cardsOnTable[indices[2]].symbol]) || checkIfAllDifferentForValues([cardsOnTable[indices[0]].symbol, cardsOnTable[indices[1]].symbol, cardsOnTable[indices[2]].symbol]){
-                        //TODO: if you make it here then yeah they're a set! wooooo.
+                        //If you make it here then yeah they're a set! wooooo.
+                        
                         //now add it to your matched cards (next time something is highlighted, check if it's matched, if it is then remove it from the cards on the table and replace these matched cards with 3 from the deck)
-                        for index in indices{
-                            matchedCards.append(cardsOnTable[index])
-                            if cardsInDeck.count > 0{
-                                cardsOnTable[index] = cardsInDeck.removeLast()
-                            }else{
-//                                cardsOnTable.removeAll(where: {cardsOnTable.indices.contains()})
-//                                cardsOnTable.remove(at: index)
-                                cardsOnTable[index].color = UIColor.clear
-                                cardsOnTable[index].isSelected = false
-                            }
+                        for matchIndex in indices{
+                            cardsOnTable[matchIndex].isMatched = true
+                            matchedCards.append(cardsOnTable[matchIndex])
                         }
-                         increaseScoreDueToMatch()
+                        //add card indices to matched card indices so that during the next selection or tap to the "add 3 more cards" button, the 3 matched cards can be handled
+                        matchedCardIndices = indices
+                        increaseScoreDueToMatch()
                     }else{
                         reduceScoreDueToMismatch()
                     }

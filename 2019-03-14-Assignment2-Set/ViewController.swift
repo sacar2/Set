@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     
     @IBOutlet var cardButtons: [UIButton]!
     @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var gameFeedbackLabel: UILabel!
     
     @IBAction func newGame(_ sender: UIButton) {
         game = SetGame()
@@ -52,13 +53,11 @@ class ViewController: UIViewController {
                 cardString += card.symbol.rawValue
             }
             
-            
             if card.color == UIColor.clear{
                 restartButton(cardButton)
             }else{
                 cardButton.layer.backgroundColor = UIColor.lightGray.cgColor
                 cardButton.isEnabled = true
-//                cardButton.isHidden = false
                 var attributes: [NSAttributedString.Key: Any] = [:]
                 if card.shading == SetCard.Shading.open{
                     attributes = [
@@ -86,6 +85,10 @@ class ViewController: UIViewController {
             if card.isSelected{
                 cardButton.layer.borderWidth = 3.0
                 cardButton.layer.borderColor = UIColor.blue.cgColor
+                if card.isMatched{
+                    cardButton.layer.borderColor = UIColor.green.cgColor
+                    cardButton.isEnabled = false  //makesure that the matched cards cannot be deselected
+                }
             }else{
                 cardButton.layer.borderWidth = 0
             }
@@ -94,6 +97,11 @@ class ViewController: UIViewController {
             dealMoreCardsButton.isEnabled = game.cardsOnTable.count < 24 && game.cardsInDeck.count > 0
             
             setScoreLabel(withScore: game.score)
+            if game.matchedCardIndices.isEmpty{
+                gameFeedbackLabel.text = ""
+            }else{
+                gameFeedbackLabel.text = "You found a set!"
+            }
         }
     }
 

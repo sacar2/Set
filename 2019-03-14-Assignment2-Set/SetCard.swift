@@ -25,6 +25,7 @@ struct SetCard{
     }
     
     var isSelected = false
+    var isMatched = false
     var symbol: Symbol
     var number: Int
     var shading: Shading
