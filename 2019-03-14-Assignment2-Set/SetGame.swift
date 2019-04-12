@@ -48,7 +48,18 @@ class SetGame{
         }else{
             removeMatchedCards()
         }
+        if isThereAnAvailableSetOnTheTable() == true{
+            //TODO: Negate points
+        }
     }
+    
+    func isThereAnAvailableSetOnTheTable() -> Bool{
+        //An algorithm to tell if there is an available set
+        //TODO: what is an efficient way to go through the cards on the table and call verifySet(forCardIndices:)
+        
+        return false
+    }
+
     
     func selectCard(forIndex index: Int){
         //assert that the cards on the table contains that index (if it doesn't then something else is screwed up, so crash!
