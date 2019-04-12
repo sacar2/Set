@@ -55,6 +55,11 @@ class SetGame{
         assert (cardsOnTable.indices.contains(index), "card tapped is out of bounds of playable cards")
         removeMatchedCards()
         
+        if !mismatchedCardIndices.isEmpty{
+            flipIsMismatchForMismatches()
+            mismatchedCardIndices.removeAll()
+        }
+        
         let card = cardsOnTable[index]
         
         //if card is already an active card, unselect the card
@@ -149,6 +154,13 @@ class SetGame{
     private func handleMismatch(forIndices indices: [Int]){
         mismatchedCardIndices = indices
         reduceScoreDueToMismatch()
+        flipIsMismatchForMismatches()
+    }
+    
+    private func flipIsMismatchForMismatches(){
+        for index in mismatchedCardIndices{
+            cardsOnTable[index].isMismatched = !cardsOnTable[index].isMismatched
+        }
     }
     
     private func reduceScoreDueToMismatch(){

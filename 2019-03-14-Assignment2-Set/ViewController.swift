@@ -88,22 +88,23 @@ class ViewController: UIViewController {
                 if card.isMatched{
                     cardButton.layer.borderColor = UIColor.green.cgColor
                     cardButton.isEnabled = false  //makesure that the matched cards cannot be deselected
+                }else if card.isMismatched{
+                    cardButton.layer.borderColor = UIColor.red.cgColor
                 }
-            }else{
-                cardButton.layer.borderWidth = 0
-            }
+            }else{ cardButton.layer.borderWidth = 0 }
             
-            //if there's no space on the table or no cards in the deck
-            dealMoreCardsButton.isEnabled = game.cardsOnTable.count < 24 && game.cardsInDeck.count > 0
-            
-            setScoreLabel(withScore: game.score)
-            if !game.matchedCardIndices.isEmpty{
-                gameFeedbackLabel.text = "You found a set 😁"
-            }else if !game.mismatchedCardIndices.isEmpty{
-                gameFeedbackLabel.text = "This is not a matching set 😣"
-            }else{
-                gameFeedbackLabel.text = "Tap three cards to make a set!"
-            }
+        }
+        
+        //if there's no space on the table or no cards in the deck
+        dealMoreCardsButton.isEnabled = game.cardsOnTable.count < 24 && game.cardsInDeck.count > 0
+        
+        setScoreLabel(withScore: game.score)
+        if !game.matchedCardIndices.isEmpty{
+            gameFeedbackLabel.text = "You found a set 😁"
+        }else if !game.mismatchedCardIndices.isEmpty{
+            gameFeedbackLabel.text = "This is not a matching set 😣"
+        }else{
+            gameFeedbackLabel.text = "Tap three cards to make a set!"
         }
     }
 
